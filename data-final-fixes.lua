@@ -1,45 +1,50 @@
-local function generate_description(recipe, results)
-	local output = {'', {"recipe-description.mprd-caption"}, " "}
-
+local function get_products_of_type(results, target_type)
+	local product_keys_list = {}
 	for _, product in pairs(results) do
-		if product.localised_name then
-			table.insert(output, ", ")
-			table.insert(output, product.localised_name)
+		local product_type = ""
+		local product_name = ""
+		local product_key = ""
+		if product.type ~= nil then -- {type="item|fluid", name="product_name", ammount=int}
+			if product.type == "item" and product.type == target_type then			product_key = "item-name." .. product.name
+			elseif product.type == "fluid" and product.type == target_type then		product_key = "fluid-name." .. product.name	end
 		else
-			local product_key = ""
-			if product.type ~= nil then
-				if product.type == "item" then product_key = "item-name." .. product.name
-				elseif product.type == "fluid" then product_key = "fluid-name." .. product.name end
-				table.insert(output, ", ")
-				table.insert(output, {product_key})
-			else
-				local product_type = ""
-				local product_name = ""
-				for i, value in pairs(product) do
-					if type(value) == "string" then
-						if value == "item" or value == "fluid" then product_type = value
-						else product_name = value end
-					end
+			for i, value in pairs(product) do -- {[1]="item|fluid", [2]="product_name", [3]=int}
+				if type(value) == "string" then
+					if value == "item" or value == "fluid" then product_type = value
+					else product_name = value end
 				end
-				if product_type == "item" and product_name ~= "" then product_key = "item-name." .. product_name
-				elseif product_type == "fluid" and product_name ~= "" then product_key = "fluid-name." .. product_name end
-				table.insert(output, ", ")
-				table.insert(output, {product_key})
 			end
+			if product_type == "item" and product_name ~= "" and product_type == target_type then		 product_key = "item-name." .. product_name
+			elseif product_type == "fluid" and product_name ~= "" and product_type == target_type then	 product_key = "fluid-name." .. product_name end
 		end
+		if product_key ~= "" then table.insert(product_keys_list, product_key) end
+	end
+	return product_keys_list
+end
+
+local function generate_description(recipe, results)
+	local new_description = {'', {"recipe-description.mprd-caption"}, " "}
+	local items = get_products_of_type(results, "item")
+	local fluids = get_products_of_type(results, "fluid")
+
+	for _, item_key in pairs(items) do -- Items must be listed first
+		table.insert(new_description, ", ")
+		table.insert(new_description, {item_key})
+	end
+	for _, fluid_key in pairs(fluids) do
+		table.insert(new_description, ", ")
+		table.insert(new_description, {fluid_key})
 	end
 
-	table.remove(output, 4) -- To deal with first comma
-	if recipe.localised_description ~= nil then -- Preserve existing description
-		table.insert(output, 2, recipe.localised_description)
-		table.insert(output, 3, "\n\n")
-	elseif recipe.description ~= nil then
-		table.insert(output, 2, {recipe.description})
-		table.insert(output, 3, "\n\n")
+	table.remove(new_description, 4) -- Remove preemptive first comma
+	if recipe.localised_description or recipe.description then -- Preserve existing description
+		if recipe.localised_description then table.insert(new_description, 2, recipe.localised_description)
+		else table.insert(new_description, 2, {recipe.description}) end
+		table.insert(new_description, 3, "\n\n")
 	end
-	--table.insert(output, "\n")
+	--table.insert(new_description, "\n") -- In case additional spacing is needed
 
-	return output
+	return new_description
 end
 
 local function get_results(recipe)
