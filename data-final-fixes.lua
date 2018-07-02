@@ -5,8 +5,11 @@ local function get_products_of_type(results, target_type)
 		local product_name = ""
 		local product_key = ""
 		if product.type ~= nil then -- {type="item|fluid", name="product_name", ammount=int}
-			if product.type == "item" and product.type == target_type then			product_key = "item-name." .. product.name
-			elseif product.type == "fluid" and product.type == target_type then		product_key = "fluid-name." .. product.name	end
+			if product.type == "item" and product.type == target_type then 
+				product_key = "item-name." .. product.name
+			elseif product.type == "fluid" and product.type == target_type then 
+				product_key = "fluid-name." .. product.name
+			end
 		else
 			for i, value in pairs(product) do -- {[1]="item|fluid", [2]="product_name", [3]=int}
 				if type(value) == "string" then
@@ -14,8 +17,11 @@ local function get_products_of_type(results, target_type)
 					else product_name = value end
 				end
 			end
-			if product_type == "item" and product_name ~= "" and product_type == target_type then		 product_key = "item-name." .. product_name
-			elseif product_type == "fluid" and product_name ~= "" and product_type == target_type then	 product_key = "fluid-name." .. product_name end
+			if product_type == "item" and product_name ~= "" and product_type == target_type then 
+				product_key = "item-name." .. product_name
+			elseif product_type == "fluid" and product_name ~= "" and product_type == target_type then 
+				product_key = "fluid-name." .. product_name
+			end
 		end
 		if product_key ~= "" then table.insert(product_keys_list, product_key) end
 	end
