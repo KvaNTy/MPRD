@@ -33,5 +33,6 @@
           "? omnilib",
           "? omnimatter",
           "? omnimatter_fluid",
-          "? omnimatter_permutation"]
+          "? omnimatter_permutation",
+          "? DirtyMining"]
 }
