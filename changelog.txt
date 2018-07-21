@@ -1,4 +1,12 @@
 ------------------------------------------------------------------------------------------
+Version: 0.16.4
+Date: 21. 07. 2018
+  New:
+    - Option to display products vertically.
+    - Option to show amounts and probabilities(if present) of products produced.
+  Fixes:
+    - Fixed inconsistency in handling recipes with probabilities involved.
+------------------------------------------------------------------------------------------
 Version: 0.16.3
 Date: 08. 07. 2018
   Fixes:
