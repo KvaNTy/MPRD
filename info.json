@@ -1,6 +1,6 @@
 {
   "name": "multi-product-recipe-details",
-  "version": "0.17.1",
+  "version": "0.17.2",
   "factorio_version": "0.17",
   "title": "Multi-Product Recipe Details",
   "author": "KvaNTy",
@@ -35,5 +35,6 @@
           "? omnimatter",
           "? omnimatter_fluid",
           "? omnimatter_permutation",
-          "? DirtyMining"]
+          "? DirtyMining",
+          "? ERPTbaAB"]
 }

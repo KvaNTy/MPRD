@@ -100,7 +100,12 @@ for _, recipe in pairs(data.raw["recipe"]) do
 	if recipe.results ~= nil or (recipe.normal ~= nil and recipe.normal.results ~= nil) then
 		local results = get_results(recipe)
 		if results ~= nil and #results > 1 then -- Only for multi-product recipes
-			recipe.localised_description = generate_description(recipe, results)
+			local new_description = generate_description(recipe, results)
+			-- For some reason there is a hard limit(=20) to how many elements can be in recipe.localised_description
+			-- Until it is raised/removed we have to ignore very long recipes
+			if #new_description <= 20 then
+				recipe.localised_description = new_description
+			end
 		end
 	end
 end

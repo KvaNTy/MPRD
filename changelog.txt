@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.17.2
+Date: 16-03-2019
+  Fixes:
+    - Improved compatibility with mods which have recipes with very large number of output products.
+---------------------------------------------------------------------------------------------------
 Version: 0.17.1
 Date: 15-03-2019
   Fixes:
