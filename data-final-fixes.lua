@@ -47,13 +47,23 @@ local function parse_product_info(result)
 	return {type=p_type, name=p_name, amount=p_amount, probability=p_probability}
 end
 
-local function format_line(product, name_prefix, output)
+local function format_line(product, name_prefix, output, has_localised_name)
 	if Vertical_Display then 
-		table.insert(output, "\n")
-		table.insert(output, {name_prefix .. product.name})
+		if has_localised_name then
+			table.insert(output, "\n")
+			table.insert(output, name_prefix)
+		else
+			table.insert(output, "\n")
+			table.insert(output, {name_prefix .. product.name})
+		end
 	else
-		table.insert(output, ", ")
-		table.insert(output, {name_prefix .. product.name})
+		if has_localised_name then
+			table.insert(output, ", ")
+			table.insert(output, name_prefix)
+		else
+			table.insert(output, ", ")
+			table.insert(output, {name_prefix .. product.name})
+		end
 	end
 	if Amount_Display and product.amount ~= nil then
 		if product.probability ~= nil and product.probability ~= 1 then
@@ -65,17 +75,36 @@ local function format_line(product, name_prefix, output)
 	return output
 end
 
+local function get_item_type(item)
+	if item.place_result ~= nil then
+		return "entity-name."
+	elseif item.placed_as_equipment_result ~= nil then
+		return "equipment-name."
+	else
+		return "item-name."
+	end
+end
+
 local function generate_description(recipe, results)
 	local new_description = {'', {"recipe-description.mprd-caption"}, " "}
 
 	local fluids = {}
 	for _, result in pairs(results) do
 		local product = parse_product_info(result)
-		-- If type is not defined product supposed to be an Item
-		if product.type == "item" or product.type == nil then
-			new_description = format_line(product, "item-name.", new_description)
-		else
-			fluids = format_line(product, "fluid-name.", fluids)
+		
+		if product.type == "fluid" then
+			fluids = format_line(product, "fluid-name.", fluids, false)
+		else -- Item, Entity or Equipment
+			local item = data.raw.item[product.name]
+			if item ~= nil then
+				if item.localised_name ~= nil then
+					new_description = format_line(product, item.localised_name, new_description, true)
+				else
+					new_description = format_line(product, get_item_type(item), new_description, false)
+				end
+			else
+				new_description = format_line(product, "item-name.", new_description, false)
+			end
 		end
 	end
 	for _, key in pairs(fluids) do table.insert(new_description, key) end -- Items first, Fluids last
@@ -109,3 +138,4 @@ for _, recipe in pairs(data.raw["recipe"]) do
 		end
 	end
 end
+
