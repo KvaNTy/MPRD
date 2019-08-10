@@ -1,6 +1,6 @@
 {
   "name": "multi-product-recipe-details",
-  "version": "0.17.2",
+  "version": "0.17.3",
   "factorio_version": "0.17",
   "title": "Multi-Product Recipe Details",
   "author": "KvaNTy",
@@ -36,5 +36,7 @@
           "? omnimatter_fluid",
           "? omnimatter_permutation",
           "? DirtyMining",
-          "? ERPTbaAB"]
+          "? ERPTbaAB",
+          "? DeadlockCrating",
+          "? Deadlock-AAII-bridge"]
 }
