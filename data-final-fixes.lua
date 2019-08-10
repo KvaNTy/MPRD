@@ -85,8 +85,9 @@ local function get_item_type(item)
 	end
 end
 
-local function generate_description(recipe, results)
+local function generate_description(recipe, results, long_recipe_mode)
 	local new_description = {'', {"recipe-description.mprd-caption"}, " "}
+	if long_recipe_mode then Amount_Display = false end
 
 	local fluids = {}
 	for _, result in pairs(results) do
@@ -109,13 +110,15 @@ local function generate_description(recipe, results)
 	end
 	for _, key in pairs(fluids) do table.insert(new_description, key) end -- Items first, Fluids last
 
-	if not Vertical_Display then table.remove(new_description, 4) end -- Remove preemptive first comma
+	if not Vertical_Display then table.remove(new_description, 4) -- Remove preemptive first comma
+	else table.remove(new_description, 3) end -- Remove unnecessary space after mprd-caption
 	if recipe.localised_description or recipe.description then -- Preserve existing description
 		if recipe.localised_description then table.insert(new_description, 2, recipe.localised_description)
 		else table.insert(new_description, 2, {recipe.description}) end
 		table.insert(new_description, 3, "\n\n")
 	end
 	--table.insert(new_description, "\n") -- In case additional spacing is needed
+	if long_recipe_mode then Amount_Display = settings.startup["mprd-amount-display"].value end
 
 	return new_description
 end
@@ -129,13 +132,18 @@ for _, recipe in pairs(data.raw["recipe"]) do
 	if recipe.results ~= nil or (recipe.normal ~= nil and recipe.normal.results ~= nil) then
 		local results = get_results(recipe)
 		if results ~= nil and #results > 1 then -- Only for multi-product recipes
-			local new_description = generate_description(recipe, results)
+			local new_description = generate_description(recipe, results, false)
 			-- For some reason there is a hard limit(=20) to how many elements can be in recipe.localised_description
-			-- Until it is raised/removed we have to ignore very long recipes
+			-- Until it is raised/removed we have to try making description shorter(by ignoring Amount_Display option)
+			-- Or if it does not help completely ignore recipes with 10 or more products
 			if #new_description <= 20 then
 				recipe.localised_description = new_description
+			else
+				new_description = generate_description(recipe, results, true)
+				if #new_description <= 20 then
+					recipe.localised_description = new_description
+				end
 			end
 		end
 	end
 end
-
