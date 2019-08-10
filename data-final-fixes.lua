@@ -94,7 +94,12 @@ local function generate_description(recipe, results, long_recipe_mode)
 		local product = parse_product_info(result)
 		
 		if product.type == "fluid" then
-			fluids = format_line(product, "fluid-name.", fluids, false)
+			local fluid = data.raw.fluid[product.name]
+			if fluid ~= nil and fluid.localised_name ~= nil then
+				fluids = format_line(product, fluid.localised_name, fluids, true)
+			else
+				fluids = format_line(product, "fluid-name.", fluids, false)
+			end
 		else -- Item, Entity or Equipment
 			local item = data.raw.item[product.name]
 			if item ~= nil then
